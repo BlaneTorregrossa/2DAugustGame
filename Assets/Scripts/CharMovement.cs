@@ -3,20 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CharMovement : MonoBehaviour {
-    public float speed;
+   
     charMode Mode;
 
-    //Mode of Character Movement 
+    public PlayerCharacter playerCharacter;
+    private float currentSpeed;
+
+  
+   
+
+    //Mode of Character Movement  ADD SPRINT
     enum charMode
     {
-        NORMAL = 0, CRAWLING = 1, JUMP
+        NORMAL = 0, CRAWLING = 1, SPRINT = 2
     }
 
    
     // Use this for initialization
     void Start ()
     {
-       speed = 10;
+   
        Mode  = charMode.NORMAL;
     }
 
@@ -26,13 +32,13 @@ public class CharMovement : MonoBehaviour {
 	void Update ()
     {
         //If crouch button is pressed change mode. Check if crawling 
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftShift) && Mode != charMode.CRAWLING)
         {
             Mode = charMode.CRAWLING;
         }
 
         //If crouch button is released change mode.
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        if (Input.GetKeyUp(KeyCode.LeftShift) && Mode == charMode.CRAWLING)
         {
             Mode = charMode.NORMAL;
         }
@@ -46,32 +52,21 @@ public class CharMovement : MonoBehaviour {
         float x = 0;
         float y = 0;
 
+
         if (Mode == charMode.NORMAL)
         {
-            speed = 6;
+            currentSpeed = playerCharacter.walkingSpeed;
         }
         if (Mode == charMode.CRAWLING)
         {
-            speed = 2;
-        }
-        if (Mode == charMode.JUMP)
-        {
-            
+            currentSpeed = playerCharacter.crawlingSpeed;
         }
 
-        //if (Input.GetAxis("Horizontal") != 0 && Input.GetAxis("Vertical") != 0)
-        //{
-        //    x = Input.GetAxis("Horizontal") * Time.deltaTime * speed / 2;
-        //    y = Input.GetAxis("Vertical") * Time.deltaTime * speed / 2;
-        //}
-
+        float nspeed = currentSpeed / 100;
        
 
-        x = Input.GetAxis("Horizontal") * speed/100;
-        y = Input.GetAxis("Vertical")  * speed/100;
-        Debug.Log("x: " + x.ToString());
-        Debug.Log("y: " + y.ToString());
-
+        x = Input.GetAxis("Horizontal") * nspeed;
+        y = Input.GetAxis("Vertical")  * nspeed;
         transform.Translate(new Vector3(x, y, 0));
     }
 }
